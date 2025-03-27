@@ -42,6 +42,18 @@ final class JavaScriptManager {
         let injectCSS = JavaScriptFunction.injectCSS(content: content)
         evaluateWhenDOMIsReady(function: injectCSS)
     }
+    
+    /// Sets the editor's editable state.
+    ///
+    /// - Parameter isEditable: A Boolean value that determines whether the editor is editable.
+    func setEditable(_ isEditable: Bool) {
+        let script = "document.getElementById('swift-rich-html-editor').contentEditable = \(isEditable ? "true" : "false");"
+        webView?.evaluateJavaScript(script) { [weak self] _, error in
+            if let error {
+                self?.delegate?.javascriptFunctionDidFail(error: error, function: "setEditable")
+            }
+        }
+    }
 
     func execCommand(_ command: ExecCommand, argument: Any? = nil) {
         let execCommand = JavaScriptFunction.execCommand(command: command.rawValue, argument: argument)

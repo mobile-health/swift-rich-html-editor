@@ -11,20 +11,20 @@
 //  specific language governing permissions and limitations
 //  under the License.
 
-#if canImport(UIKit)
-import UIKit
-
-public typealias PlatformView = UIView
-public typealias PlatformColor = UIColor
-#elseif canImport(AppKit)
-import AppKit
-
-public typealias PlatformView = NSView
-public typealias PlatformColor = NSColor
-#endif
-
 import OSLog
 import WebKit
+
+#if canImport(UIKit)
+    import UIKit
+
+    public typealias PlatformView = UIView
+    public typealias PlatformColor = UIColor
+#elseif canImport(AppKit)
+    import AppKit
+
+    public typealias PlatformView = NSView
+    public typealias PlatformColor = NSColor
+#endif
 
 /// An editor to edit HTML content.
 ///
@@ -51,36 +51,50 @@ public class RichHTMLEditorView: PlatformView {
         }
     }
 
-    #if canImport(UIKit)
-    /// A Boolean value that indicates whether the responder accepts first responder status.
-    override public var canBecomeFirstResponder: Bool {
-        return true
+    /// A Boolean value that indicates whether the editor view is editable.
+    ///
+    /// When the Boolean is `false`, the editor will only display content
+    /// but will not allow user input or editing.
+    /// The default value is `true`.
+    public var isEditable: Bool {
+        get {
+            return rawIsEditable
+        }
+        set {
+            setEditableBehavior(newValue)
+        }
     }
 
+    #if canImport(UIKit)
+        /// A Boolean value that indicates whether the responder accepts first responder status.
+        override public var canBecomeFirstResponder: Bool {
+            return true
+        }
+
     #elseif canImport(AppKit)
-    /// A Boolean value that indicates whether the responder accepts first responder status.
-    override public var acceptsFirstResponder: Bool {
-        return true
-    }
+        /// A Boolean value that indicates whether the responder accepts first responder status.
+        override public var acceptsFirstResponder: Bool {
+            return true
+        }
     #endif
 
     #if canImport(UIKit)
-    /// Returns a Boolean value indicating whether this object is the first responder.
-    override public var isFirstResponder: Bool {
-        return webView.containsFirstResponder
-    }
+        /// Returns a Boolean value indicating whether this object is the first responder.
+        override public var isFirstResponder: Bool {
+            return webView.containsFirstResponder
+        }
     #endif
 
     #if canImport(UIKit) && !os(visionOS)
-    /// The custom accessory view to display when the editor view becomes the first responder.
-    override public var inputAccessoryView: UIView? {
-        get {
-            return webView.richHTMLEditorInputAccessoryView
+        /// The custom accessory view to display when the editor view becomes the first responder.
+        override public var inputAccessoryView: UIView? {
+            get {
+                return webView.richHTMLEditorInputAccessoryView
+            }
+            set {
+                webView.richHTMLEditorInputAccessoryView = newValue
+            }
         }
-        set {
-            webView.richHTMLEditorInputAccessoryView = newValue
-        }
-    }
     #endif
 
     /// The natural size for the receiving view, considering only properties of the view itself.
@@ -131,6 +145,7 @@ public class RichHTMLEditorView: PlatformView {
     var rawHTMLContent = ""
     var rawIsScrollEnabled = false
     var rawContentHeight = CGFloat.zero
+    var rawIsEditable = true
 
     var javaScriptManager: JavaScriptManager!
     var scriptMessageHandler: ScriptMessageHandler!
@@ -269,11 +284,16 @@ public extension RichHTMLEditorView {
         javaScriptManager.setHTMLContent(newContent)
     }
 
-    #if canImport(UIKit)
-    private func setScrollableBehavior(_ isScrollEnabled: Bool) {
-        rawIsScrollEnabled = isScrollEnabled
-        webView.scrollView.isScrollEnabled = isScrollEnabled
+    private func setEditableBehavior(_ isEditable: Bool) {
+        rawIsEditable = isEditable
+        javaScriptManager.setEditable(isEditable)
     }
+
+    #if canImport(UIKit)
+        private func setScrollableBehavior(_ isScrollEnabled: Bool) {
+            rawIsScrollEnabled = isScrollEnabled
+            webView.scrollView.isScrollEnabled = isScrollEnabled
+        }
     #endif
 }
 
@@ -320,6 +340,8 @@ extension RichHTMLEditorView: UIScrollViewDelegate {
 extension RichHTMLEditorView: ScriptMessageHandlerDelegate {
     func editorDidLoad() {
         javaScriptManager.isDOMContentLoaded = true
+        // Apply the editable state when the editor loads
+        javaScriptManager.setEditable(rawIsEditable)
         delegate?.richHTMLEditorViewDidLoad(self)
     }
 
