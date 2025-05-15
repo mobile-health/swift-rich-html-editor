@@ -15,15 +15,15 @@ import OSLog
 import WebKit
 
 #if canImport(UIKit)
-    import UIKit
+import UIKit
 
-    public typealias PlatformView = UIView
-    public typealias PlatformColor = UIColor
+public typealias PlatformView = UIView
+public typealias PlatformColor = UIColor
 #elseif canImport(AppKit)
-    import AppKit
+import AppKit
 
-    public typealias PlatformView = NSView
-    public typealias PlatformColor = NSColor
+public typealias PlatformView = NSView
+public typealias PlatformColor = NSColor
 #endif
 
 /// An editor to edit HTML content.
@@ -65,36 +65,38 @@ public class RichHTMLEditorView: PlatformView {
         }
     }
 
+    public var baseURL: URL?
+
     #if canImport(UIKit)
-        /// A Boolean value that indicates whether the responder accepts first responder status.
-        override public var canBecomeFirstResponder: Bool {
-            return true
-        }
+    /// A Boolean value that indicates whether the responder accepts first responder status.
+    override public var canBecomeFirstResponder: Bool {
+        return true
+    }
 
     #elseif canImport(AppKit)
-        /// A Boolean value that indicates whether the responder accepts first responder status.
-        override public var acceptsFirstResponder: Bool {
-            return true
-        }
+    /// A Boolean value that indicates whether the responder accepts first responder status.
+    override public var acceptsFirstResponder: Bool {
+        return true
+    }
     #endif
 
     #if canImport(UIKit)
-        /// Returns a Boolean value indicating whether this object is the first responder.
-        override public var isFirstResponder: Bool {
-            return webView.containsFirstResponder
-        }
+    /// Returns a Boolean value indicating whether this object is the first responder.
+    override public var isFirstResponder: Bool {
+        return webView.containsFirstResponder
+    }
     #endif
 
     #if canImport(UIKit) && !os(visionOS)
-        /// The custom accessory view to display when the editor view becomes the first responder.
-        override public var inputAccessoryView: UIView? {
-            get {
-                return webView.richHTMLEditorInputAccessoryView
-            }
-            set {
-                webView.richHTMLEditorInputAccessoryView = newValue
-            }
+    /// The custom accessory view to display when the editor view becomes the first responder.
+    override public var inputAccessoryView: UIView? {
+        get {
+            return webView.richHTMLEditorInputAccessoryView
         }
+        set {
+            webView.richHTMLEditorInputAccessoryView = newValue
+        }
+    }
     #endif
 
     /// The natural size for the receiving view, considering only properties of the view itself.
@@ -154,18 +156,27 @@ public class RichHTMLEditorView: PlatformView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+        setupCommon()
+    }
 
+    init(frame: CGRect, baseURL: URL?) {
+        self.baseURL = baseURL
+        super.init(frame: frame)
+        setupCommon()
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func setupCommon() {
         scriptMessageHandler = ScriptMessageHandler()
         scriptMessageHandler.delegate = self
 
         setUpWebView()
         javaScriptManager = JavaScriptManager(webView: webView)
         javaScriptManager.delegate = self
-    }
-
-    @available(*, unavailable)
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 
     /// Notifies the receiver that it’s about to become first responder in its window.
@@ -268,8 +279,12 @@ public extension RichHTMLEditorView {
             return
         }
 
-        let request = URLRequest(url: indexURL)
-        webView.load(request)
+        if let baseURL, let data = try? Data(contentsOf: indexURL) {
+           webView.load(data, mimeType: "text/html", characterEncodingName: "UTF-8", baseURL: baseURL)
+        } else {
+            let request = URLRequest(url: indexURL)
+            webView.load(request)
+        }
     }
 
     private func enableWebViewDebug() {
@@ -290,10 +305,10 @@ public extension RichHTMLEditorView {
     }
 
     #if canImport(UIKit)
-        private func setScrollableBehavior(_ isScrollEnabled: Bool) {
-            rawIsScrollEnabled = isScrollEnabled
-            webView.scrollView.isScrollEnabled = isScrollEnabled
-        }
+    private func setScrollableBehavior(_ isScrollEnabled: Bool) {
+        rawIsScrollEnabled = isScrollEnabled
+        webView.scrollView.isScrollEnabled = isScrollEnabled
+    }
     #endif
 }
 

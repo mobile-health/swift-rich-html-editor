@@ -36,16 +36,18 @@ public struct RichHTMLEditor: PlateformViewRepresentable {
 
     @Binding public var html: String
     @ObservedObject public var textAttributes: TextAttributes
+    public var baseURL: URL?
 
-    public init(html: Binding<String>, textAttributes: TextAttributes) {
+    public init(html: Binding<String>, textAttributes: TextAttributes, baseURL _baseURL: URL? = nil) {
         _html = html
         _textAttributes = ObservedObject(wrappedValue: textAttributes)
+        baseURL = _baseURL
     }
 
     // MARK: - Platform functions
 
     private func createPlatformView(context: Context) -> RichHTMLEditorView {
-        let richHTMLEditorView = RichHTMLEditorView()
+        let richHTMLEditorView = RichHTMLEditorView(frame: .zero, baseURL: baseURL)
         richHTMLEditorView.delegate = context.coordinator
         richHTMLEditorView.html = html
 
