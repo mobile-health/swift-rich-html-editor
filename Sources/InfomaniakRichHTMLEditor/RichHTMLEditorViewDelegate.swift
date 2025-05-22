@@ -97,6 +97,15 @@ public protocol RichHTMLEditorViewDelegate: AnyObject {
     ///
     /// - Returns: `false` if the editor should handle the link opening itself.
     func richHTMLEditorView(_ richHTMLEditorView: RichHTMLEditorView, shouldHandleLink link: URL) -> Bool
+
+    /// Tells the delegate when an image is tapped in the editor view.
+    ///
+    /// Implementation of this method is optional.
+    ///
+    /// - Parameters:
+    ///   - richHTMLEditorView: The editor which is loaded.
+    ///   - imageSrc: The src of the image tapped.
+    func richHTMLEditorView(_ richHTMLEditorView: RichHTMLEditorView, imageDidTap imageSrc: String)
 }
 
 // Default implementation for optional functions
@@ -116,4 +125,5 @@ public extension RichHTMLEditorViewDelegate {
     func richHTMLEditorView(_ richHTMLEditorView: RichHTMLEditorView, shouldHandleLink link: URL) -> Bool {
         return false
     }
+    func richHTMLEditorView(_ richHTMLEditorView: RichHTMLEditorView, imageDidTap imageSrc: String) {}
 }

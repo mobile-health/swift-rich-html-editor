@@ -111,3 +111,24 @@ function guessMostProbableMovingSelectionGrabber(selectionRange) {
         return (lastSelectionRange.endContainer !== selectionRange.endContainer) ? SelectionGrabber.end : SelectionGrabber.start;
     }
 }
+
+// Listen for click on <img> inside the editor
+function listenImageTapInEditor(target) {
+    // Prevent focus when pointer down on image
+    target.addEventListener("pointerdown", event => {
+        const target = event.target;
+        if (target?.tagName === "IMG") {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    });
+
+    // Send callback when clicking on image
+    target.addEventListener("click", event => {
+        const target = event.target;
+        if (target?.tagName === "IMG" && 
+            window.webkit?.messageHandlers?.imageDidTap) {
+            window.webkit.messageHandlers.imageDidTap.postMessage(target.src);
+        }
+    });
+}

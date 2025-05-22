@@ -33,6 +33,7 @@ public struct RichHTMLEditor: PlateformViewRepresentable {
     @Environment(\.onJavaScriptFunctionFail) var onJavaScriptFunctionFail
     @Environment(\.introspectEditor) var introspectEditor
     @Environment(\.handleLinkOpening) var handleLinkOpening
+    @Environment(\.onImageDidTap) var onImageDidTap
 
     @Binding public var html: String
     @ObservedObject public var textAttributes: TextAttributes

@@ -92,4 +92,14 @@ public extension View {
     func handleLinkOpening(perform action: @escaping (URL) -> Bool) -> some View {
         environment(\.handleLinkOpening, action)
     }
+
+    /// Performs an action when an image is tapped in the editor.
+    ///
+    /// - Parameter action: A closure to run when an image is tapped. The closure
+    ///   takes the image src as parameter.
+    ///
+    /// - Returns: A view that fires an action when an image is tapped.
+    func onImageDidTap(perform action: @escaping (String) -> Void) -> some View {
+        environment(\.onImageDidTap, action)
+    }
 }

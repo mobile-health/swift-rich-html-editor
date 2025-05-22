@@ -6,4 +6,5 @@ document.addEventListener("DOMContentLoaded", () => {
     observeResize(document.documentElement);
     observeContentMutation(document, getEditor());
     observeSelectionChange(document);
+    listenImageTapInEditor(document);
 });

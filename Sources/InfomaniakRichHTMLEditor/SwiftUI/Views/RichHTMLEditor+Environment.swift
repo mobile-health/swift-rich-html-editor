@@ -51,6 +51,10 @@ public struct HandleLinkOpeningKey: EnvironmentKey {
     public static let defaultValue: ((URL) -> Bool)? = nil
 }
 
+public struct OnImageDidTapKey: EnvironmentKey {
+    public static let defaultValue: ((String) -> Void)? = nil
+}
+
 // MARK: - Environment Values
 
 public extension EnvironmentValues {
@@ -96,5 +100,10 @@ public extension EnvironmentValues {
     var handleLinkOpening: ((URL) -> Bool)? {
         get { self[HandleLinkOpeningKey.self] }
         set { self[HandleLinkOpeningKey.self] = newValue }
+    }
+
+    var onImageDidTap: ((String) -> Void)? {
+        get { self[OnImageDidTapKey.self] }
+        set { self[OnImageDidTapKey.self] = newValue }
     }
 }

@@ -280,7 +280,7 @@ public extension RichHTMLEditorView {
         }
 
         if let baseURL, let data = try? Data(contentsOf: indexURL) {
-           webView.load(data, mimeType: "text/html", characterEncodingName: "UTF-8", baseURL: baseURL)
+            webView.load(data, mimeType: "text/html", characterEncodingName: "UTF-8", baseURL: baseURL)
         } else {
             let request = URLRequest(url: indexURL)
             webView.load(request)
@@ -353,6 +353,10 @@ extension RichHTMLEditorView: UIScrollViewDelegate {
 // MARK: - ScriptMessageHandlerDelegate
 
 extension RichHTMLEditorView: ScriptMessageHandlerDelegate {
+    func imageDidTap(_ src: String) {
+        delegate?.richHTMLEditorView(self, imageDidTap: src)
+    }
+
     func editorDidLoad() {
         javaScriptManager.isDOMContentLoaded = true
         // Apply the editable state when the editor loads
