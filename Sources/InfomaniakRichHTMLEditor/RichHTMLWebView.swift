@@ -11,6 +11,19 @@
 //  specific language governing permissions and limitations
 //  under the License.
 
-enum EditorError: Error, Sendable {
-    case impossibleToLoadWKUserScript(filename: String)
+import WebKit
+
+public class RichHTMLWebView: WKWebView {
+    #if canImport(UIKit) && !os(visionOS)
+    public override var inputAccessoryView: UIView? {
+        get {
+            return richHTMLEditorInputAccessoryView
+        }
+        set {
+            richHTMLEditorInputAccessoryView = newValue
+        }
+    }
+
+    private var richHTMLEditorInputAccessoryView: UIView?
+    #endif
 }

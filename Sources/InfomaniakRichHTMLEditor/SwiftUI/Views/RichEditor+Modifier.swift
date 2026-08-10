@@ -32,7 +32,7 @@ public extension View {
     ///   view.
     ///
     /// - Returns: A view that uses the specified view as an input accessory view.
-    func editorInputAccessoryView(_ inputAccessoryView: UIView) -> some View {
+    func editorInputAccessoryView(_ inputAccessoryView: UIView?) -> some View {
         environment(\.editorInputAccessoryView, inputAccessoryView)
     }
     #endif
@@ -44,10 +44,10 @@ public extension View {
     /// Performs an action when the editor is loaded.
     ///
     /// - Parameter action: A closure to run when the editor is loaded. The closure
-    ///   takes a `newValue` parameter that indicates the updated value.
+    ///   receives the `RichHTMLEditorView` instance representing the loaded editor view.
     ///
     /// - Returns: A view that fires an action when the editor is loaded.
-    func onEditorLoaded(perform action: @escaping () -> Void) -> some View {
+    func onEditorLoaded(perform action: @MainActor @escaping (RichHTMLEditorView) -> Void) -> some View {
         environment(\.onEditorLoaded, action)
     }
 
@@ -57,7 +57,7 @@ public extension View {
     ///   takes a `newPosition` parameter that indicates the updated position.
     ///
     /// - Returns: A view that fires an action when the position of the caret changes.
-    func onCaretPositionChange(perform action: @escaping (_ newPosition: CGRect) -> Void) -> some View {
+    func onCaretPositionChange(perform action: @escaping @Sendable (_ newPosition: CGRect) -> Void) -> some View {
         environment(\.onCaretPositionChange, action)
     }
 
@@ -66,7 +66,7 @@ public extension View {
     /// - Parameter action: A closure to run when a JavaScript function fails.
     ///
     /// - Returns: A view that fires an action when a JavaScript function fails.
-    func onJavaScriptFunctionFail(perform action: @escaping (any Error, String) -> Void) -> some View {
+    func onJavaScriptFunctionFail(perform action: @escaping @Sendable (any Error, String) -> Void) -> some View {
         environment(\.onJavaScriptFunctionFail, action)
     }
 
@@ -76,7 +76,7 @@ public extension View {
     ///   the editor.
     ///
     /// - Returns: A view with the customizations applied to editor.
-    func introspectEditor(perform action: @escaping (RichHTMLEditorView) -> Void) -> some View {
+    func introspectEditor(perform action: @MainActor @escaping (RichHTMLEditorView) -> Void) -> some View {
         environment(\.introspectEditor, action)
     }
 
@@ -89,7 +89,7 @@ public extension View {
     ///     this task yourself.
     ///
     /// - Returns: A view with the customizations applied to editor.
-    func handleLinkOpening(perform action: @escaping (URL) -> Bool) -> some View {
+    func handleLinkOpening(perform action: @escaping @Sendable (URL) -> Bool) -> some View {
         environment(\.handleLinkOpening, action)
     }
 }

@@ -17,6 +17,8 @@ enum EditorState: String, CaseIterable {
     case scrollable = "Scrollable"
     case notScrollable = "Not Scrollable"
     case fixedSize = "Fixed Size"
+    case editorWithToolbar = "Editor with Toolbar"
+    case editorWithSwiftUIToolbar = "Editor with SwiftUI Toolbar"
 }
 
 struct RootView: View {
@@ -32,6 +34,10 @@ struct RootView: View {
                     NotScrollableEditorView()
                 case .fixedSize:
                     FixedSizeEditorView()
+                case .editorWithToolbar:
+                    EditorWithToolbar()
+                case .editorWithSwiftUIToolbar:
+                    EditorWithSwiftUIToolbar()
                 }
             }
             .navigationTitle("Infomaniak - RichHTMLEditor (SwiftUI)")
